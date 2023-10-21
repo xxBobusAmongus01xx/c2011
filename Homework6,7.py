@@ -3,7 +3,6 @@ import random
 
 class Human:
     def __init__(self, name="Human", home=None, job=None, car=None, animal=None):
-        self.animal = animal
         self.name = name
         self.money = 100
         self.gladness = 50
@@ -11,9 +10,13 @@ class Human:
         self.job = job
         self.home = home
         self.car = car
+        self.animal = animal
 
     def get_home(self):
         self.home = House()
+
+    def get_animal(self):
+        pass
 
     def get_car(self):
         self.car = Auto(brand_of_car)
@@ -35,14 +38,6 @@ class Human:
                 return
             self.satiety += 5
             self.home.food -= 5
-
-    def animal(self):
-        if self.animal.food <= 0:
-            self.shopping("Give food to your pet")
-        else:
-            print("Your pet dead... :(")
-            return False
-
 
     def work(self):
         if self.car.drive():
@@ -84,7 +79,6 @@ class Human:
     def chill(self):
         self.gladness += 10
         self.home.mess += 5
-        self.animal
 
     def clean_home(self):
         self.gladness -= 5
@@ -93,6 +87,10 @@ class Human:
     def to_repair(self):
         self.car.strenght += 100
         self.money -= 50
+
+    def play_with(self):
+        self.gladness +=10
+        self.money -= 10
 
     def days_indexes(self, day):
         day = f" Today the {day} of {self.name}'s life"
@@ -110,8 +108,10 @@ class Human:
         print(f"{car_indexes: ^50}", "\n")
         print(f"Fuel - {self.car.fuel}")
         print(f"Strenght - {self.car.strenght}")
-
-
+        pet_indexes = f"{self.animal.types}pet indexes"
+        print(f"{pet_indexes: ^50}", "\n")
+        print(f"Energy - {self.animal.energy}")
+        print(f"Enjoyment - {self.car.enjoyment}")
 
     def is_alive(self):
         if self.gladness < 0:
@@ -137,7 +137,7 @@ class Human:
             self.get_job()
             print(f"I don't have a job , I'm going to get a job {self.job.job} with salary {self.job.salary} ")
         self.days_indexes(day)
-        dice = random.randint(1, 5)
+        dice = random.randint(1, 4)
         if self.satiety < 20:
             print("I'll go eat")
             self.eat()
@@ -165,10 +165,7 @@ class Human:
             self.clean_home()
         elif dice == 4:
             print("Time for treats")
-            self.shopping(manage="delicacies")
-        elif dice == 5:
-            print("Time to play with my pet")
-            self.shopping(manage="It's so relaxing")
+            self.shopping(manage = "delicacies")
 
 
 class Auto:
@@ -178,6 +175,7 @@ class Auto:
         self.strenght = brand_list[self.brand]["strenght"]
         self.consumption = brand_list[self.brand]["consumption"]
 
+
     def drive(self):
         if self.strenght > 0 and self.fuel >= self.consumption:
             self.fuel -= self.consumption
@@ -186,6 +184,23 @@ class Auto:
         else:
             print("The car can't move")
             return False
+
+    def animal(self):
+        if self.enjoyment > 0 and self.energy >= self.consumption:
+            self.energy -= self.consumption
+            self.enjoyment -= 1
+            return True
+        else:
+            print("Your pet isn't in happy mood")
+            return False
+
+
+class Animal:
+    def __init__(self, list_of_animal):
+        self.list_of_animal = random.choice(list(types_of_animal))
+        self.energy = list_of_animal[self.types]["energy"]
+        self.enjoyment = list_of_animal[self.types]["enjoyment"]
+        self.consumption = list_of_animal[self.types]["consumption"]
 
 
 class House:
@@ -198,6 +213,12 @@ brand_of_car = {
     '宝马 BMW': {"fuel": 100, "strenght": 100, "consumption": 6},
     '本田 Honda': {"fuel": 50, "strenght": 40, "consumption": 10},
     '沃尔沃 Volvo': {"fuel": 70, "strenght": 150, "consumption": 8}}
+
+types_of_animal = {
+    'Dog': {"energy": 130, "enjoyment": 230, "consumption": 26},
+    'Cat': {"energy": 150, "enjoyment": 80, "consumption": 9},
+    'Parrot': {"energy": 90, "enjoyment": 110, "consumption": 4}}
+
 
 job_list = {
     "Java开发人员 Java developer": {"salary": 50, "gladness_less": 10},
@@ -212,19 +233,7 @@ class Job:
         self.salary = job_list[self.job]["salary"]
         self.gladness_less = job_list[self.job]["gladness_less"]
 
-
-class Animal:
-    def __init__(self, animal_list):
-        self.animal = random.choice(list(animal_list))
-        self.energy = animal_list[self.animal]["energy"]
-        self.gladness = animal_list[self.animal]["gladness"]
-
-
-animal_list = {
-    "Cat": {"energy": 155, "gladness": 95},
-    "Dog": {"energy": 260, "gladness": 130}}
-
 nick = Human(name="Nick")
 for day in range(1, 8):
-    if nick.live(day) == False:
+    if nick.live(day):
         break
